@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RecadosModule } from 'src/recados/recados.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
+import { PessoasModule } from 'src/pessoas/pessoas.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -11,12 +11,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       host: 'localhost',
       port: 5432,
       username: 'postgres',
-      password: 'aguishow',
+      password: '123456',
       database: 'postgres',
       autoLoadEntities: true,
       synchronize: true,
     }),
     RecadosModule,
+    PessoasModule,
   ],
   controllers: [AppController],
   providers: [AppService],

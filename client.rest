@@ -15,27 +15,70 @@ POST {{baseUrl}}/recados
 Content-Type: application/json
 
 {
-    "texto": " recado",
-    "de": "klsssseber",
-    "para": "fgggg"
+    "texto": " Novo recadinho",
+    "deId": 15,
+    "paraId": 13
   }
 
 
 ###
 
 # @name updateRecado
-PUT {{baseUrl}}/recados/2
+PUT {{baseUrl}}/recados/1
 Content-Type: application/json
 
 {
-    "texto": "recado atualizado"
-    
-   
+    "texto": "recado atualizado",
+    "lido": true,
+    "de": "klssssedsadaber"
 }
 
 ###
 
 # @name deleteRecado
 DELETE {{baseUrl}}/recados/1
+
+
+
+
+
+
+###PESSOAS
+
+# @name getAllPessoas
+GET {{baseUrl}}/pessoas
+
+###
+
+# @name getPessoaById
+GET {{baseUrl}}/pessoas/13
+
+###
+
+# @name createPessoa
+POST {{baseUrl}}/pessoas
+Content-Type: application/json
+
+{
+    "nome": "dddd",
+    "email": "joaozidddn@gmail.com",
+    "password": "senha123"
+  }
+
+
+###
+
+# @name updatePessoa
+PATCH {{baseUrl}}/pessoas/15
+Content-Type: application/json
+
+{
+    "nome": "ca"
+}
+
+###
+
+# @name deletePessoa
+DELETE {{baseUrl}}/pessoas/10
 
 

@@ -23,7 +23,7 @@ export class RecadosController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateRecadoDto: UpdateRecadoDto) {
+  update(@Param('id') id: number, @Body() updateRecadoDto: UpdateRecadoDto) {
     return this.recadosService.update(id, updateRecadoDto);
   }
 
