@@ -1,57 +1,67 @@
 @baseUrl = http://localhost:3000
 
+@authToken = {{authenticate.response.body.accessToken}}
+
+@refreshToken = {{authenticate.response.body.refreshToken}}
+
+
 # @name getAllRecados
-GET {{baseUrl}}/recados
+GET {{baseUrl}}/recados/
+?limit=10
+&offset=0
 
 ###
 
 # @name getRecadoById
-GET {{baseUrl}}/recados/1
+GET {{baseUrl}}/recados/36
 
 ###
 
 # @name createRecado
 POST {{baseUrl}}/recados
+Authorization: Bearer {{authToken}}
 Content-Type: application/json
 
 {
     "texto": " Novo recadinho",
-    "deId": 15,
-    "paraId": 13
+    "paraId": 23
   }
 
 
 ###
 
 # @name updateRecado
-PUT {{baseUrl}}/recados/1
+PUT {{baseUrl}}/recados/40
+Authorization: Bearer {{authToken}}
 Content-Type: application/json
 
 {
-    "texto": "recado atualizado",
-    "lido": true,
-    "de": "klssssedsadaber"
+    "texto": "fffwafaf",
+    "lido": false
 }
 
 ###
 
 # @name deleteRecado
-DELETE {{baseUrl}}/recados/1
-
+DELETE {{baseUrl}}/recados/40
+Authorization: Bearer {{authToken}}
 
 
 
 
 
 ###PESSOAS
-
 # @name getAllPessoas
 GET {{baseUrl}}/pessoas
+?limit=10
+&offset=0
+Authorization: Bearer {{authToken}}
 
 ###
 
 # @name getPessoaById
-GET {{baseUrl}}/pessoas/13
+GET {{baseUrl}}/pessoas/21
+Authorization: Bearer {{authToken}}
 
 ###
 
@@ -60,8 +70,8 @@ POST {{baseUrl}}/pessoas
 Content-Type: application/json
 
 {
-    "nome": "dddd",
-    "email": "joaozidddn@gmail.com",
+    "nome": "norberto",
+    "email": "norrto@gmail.com",
     "password": "senha123"
   }
 
@@ -69,16 +79,57 @@ Content-Type: application/json
 ###
 
 # @name updatePessoa
-PATCH {{baseUrl}}/pessoas/15
+PATCH {{baseUrl}}/pessoas/21
+Authorization: Bearer {{authToken}}
 Content-Type: application/json
 
 {
-    "nome": "ca"
+    "nome": "mudemais"
 }
 
 ###
 
 # @name deletePessoa
-DELETE {{baseUrl}}/pessoas/10
+DELETE {{baseUrl}}/pessoas/23
+Authorization: Bearer {{authToken}}
+
+
+
+
+
+###AUTH
+
+# @name authenticate
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "norberto@gmail.com",
+    "password": "senha123"
+}
+
+###Re-Authenticate
+
+# @name reAuthenticate
+POST {{baseUrl}}/auth/refresh/
+Content-Type: application/json
+
+{
+    "refreshToken": "{{refreshToken}}"
+}
+
+###
+
+# @name uploadImage
+POST {{baseUrl}}/pessoas/upload-image
+Authorization: Bearer {{authToken}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="foto.png"
+Content-Type: image/png
+
+< ./images/foto.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
 

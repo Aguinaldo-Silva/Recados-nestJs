@@ -1,4 +1,5 @@
 import { IsEmail } from "class-validator";
+import { RoutePolicies } from "src/auth/enums/route-policies.enum";
 import { Recado } from "src/recados/entities/recados.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
@@ -14,7 +15,7 @@ export class Pessoa {
     @Column({ unique: true })
     email: string;
 
-    @Column({ length: 50 })
+    @Column({ length: 100, nullable: false })
     passwordHash: string;
 
     @CreateDateColumn()
@@ -28,4 +29,11 @@ export class Pessoa {
 
     @OneToMany(() => Recado, (recado) => recado.para)
     recadosRecebidos: Recado[];
+
+    @Column({ default: true })
+    active: boolean;
+
+    @Column({ type: 'simple-array', default: [] })
+    routePolicies: RoutePolicies[];
+
 }

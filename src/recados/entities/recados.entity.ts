@@ -10,16 +10,16 @@ export class Recado {
   texto: string;
 
   //Muitos recados podem ser enviado por uma unica pessoa
-  @ManyToOne(() => Pessoa)
+  @ManyToOne(() => Pessoa, {onDelete: 'CASCADE', onUpdate: 'CASCADE'})
   //nome da coluna que vai ser criada na tabela recado que armazena o id da pessoa que enviou o recado
   @JoinColumn({ name: 'de' })
   de: Pessoa;
 
   //Muitos recados podem ser enviado para uma unica pessoa
-  @ManyToOne(() => Pessoa)
+  @ManyToOne(() => Pessoa, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   //nome da coluna que vai ser criada na tabela recado que armazena o id da pessoa que recebeu o recado
   @JoinColumn({ name: 'para' })
-  para: Pessoa;
+  para: Pessoa; 
 
   @Column({ type: 'boolean', default: false })
   lido: boolean;

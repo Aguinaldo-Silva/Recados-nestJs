@@ -20,9 +20,5 @@ export class CreateRecadoDto {
 
   @IsPositive()
   @IsNotEmpty()
-  readonly deId: number;
-
-  @IsPositive()
-  @IsNotEmpty()
   readonly paraId: number;
 }

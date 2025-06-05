@@ -1,10 +1,12 @@
-import { Body, Injectable, NotFoundException } from '@nestjs/common';
+import { Body, ForbiddenException, Injectable, NotFoundException, Query } from '@nestjs/common';
 import { Recado } from './entities/recados.entity';
 import { CreateRecadoDto } from './dto/create-recado.dto';
 import { UpdateRecadoDto } from './dto/update-recado.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PessoasService } from 'src/pessoas/pessoas.service';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { TokenPayloadDto } from 'src/auth/dto/token-payload.dto';
 @Injectable()
 export class RecadosService {
  constructor(
@@ -15,8 +17,11 @@ export class RecadosService {
 
  }
 
- async findAll(): Promise<Recado[]> {
+ async findAll(@Query() paginationDto?: PaginationDto) {
+     const {limit = 10, offset = 0} = paginationDto || {};
      const recados = await this.recadoRepository.find({
+      take: limit,
+      skip: offset,
       relations: ['de', 'para'],
       order: {
         createdAt: 'DESC',
@@ -61,10 +66,10 @@ export class RecadosService {
     return recado;
   }
 
-  async create(createRecadoDto: CreateRecadoDto) {
-    const {deId, paraId} = createRecadoDto;
+  async create(createRecadoDto: CreateRecadoDto, tokenPayload: TokenPayloadDto) {
+    const { paraId} = createRecadoDto;
 
-    const de = await this.pessoasService.findOne(deId);
+    const de = await this.pessoasService.findOne(tokenPayload.sub);
     const para = await this.pessoasService.findOne(paraId);
 
     const novoRecado = {
@@ -84,39 +89,37 @@ export class RecadosService {
       de: {
         id: recado.de.id,
         nome: recado.de.nome,
-        email: recado.de.email,
       },
       para: {
         id: recado.para.id,
         nome: recado.para.nome,
-        email: recado.para.email,
       },
     }
   }
 
-  async update(id: number, updateRecadoDto: UpdateRecadoDto) {
-    const partialUpdateRecadoDto = {
-      lido: updateRecadoDto?.lido,
-      texto: updateRecadoDto?.texto,
-    }
+  async update(id: number, updateRecadoDto: UpdateRecadoDto, tokenPayload: TokenPayloadDto) {
+   const recado = await this.findOne(id);
 
-    const recado = await this.recadoRepository.preload({
-      id,
-      ...partialUpdateRecadoDto,
-    });
-    if (!recado) {
-      throw new NotFoundException('Recado não encontrado');
-    }
-    return this.recadoRepository.save(recado);
+   recado.texto = updateRecadoDto.texto || recado.texto;
+   recado.lido = updateRecadoDto.lido || recado.lido;
+
+   if (recado.de.id !== tokenPayload.sub) {
+    throw new ForbiddenException('Você não pode atualizar este recado');
+   }
+
+   await this.recadoRepository.save(recado);
+
+   return recado;
   }
 
-  async delete(id: number): Promise<number> {
-   const recado = await this.recadoRepository.findOneBy({id: id});
-   if (!recado) {
-    throw new NotFoundException('Recado não encontrado');
+  async delete(id: number, tokenPayload: TokenPayloadDto) {
+   const recado = await this.findOne(id);
+  
+   if (recado.de.id !== tokenPayload.sub) {
+    throw new ForbiddenException('Você não pode deletar este recado');
    }
-   await this.recadoRepository.remove(recado);
-   return id;
+   return this.recadoRepository.remove(recado);
+
 }
 
 }
