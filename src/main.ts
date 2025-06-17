@@ -4,9 +4,12 @@ import { ValidationPipe } from '@nestjs/common';
 import { parseIntIdPipe } from './common/pipes/parseIntId.pipe';
 import helmet from 'helmet';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { getAbsoluteFSPath } from 'swagger-ui-dist';
+import { join } from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true, //remove propriedades que não estão no DTO
     forbidNonWhitelisted: true, //retorna um erro se houver propriedades que não estão no DTO
@@ -15,6 +18,10 @@ async function bootstrap() {
     new parseIntIdPipe()
 
   );
+
+  app.useStaticAssets(getAbsoluteFSPath(), {
+    prefix: '/api',
+  });
 
   if (process.env.NODE_ENV === 'production') {
   app.use(helmet({
