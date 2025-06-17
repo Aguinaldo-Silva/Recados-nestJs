@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { PessoasService } from 'src/pessoas/pessoas.service';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { TokenPayloadDto } from 'src/auth/dto/token-payload.dto';
+import { ResponseRecadoDto } from './dto/response-recado.dto';
 @Injectable()
 export class RecadosService {
  constructor(
@@ -17,7 +18,7 @@ export class RecadosService {
 
  }
 
- async findAll(@Query() paginationDto?: PaginationDto) {
+ async findAll(@Query() paginationDto?: PaginationDto): Promise<ResponseRecadoDto[]> {
      const {limit = 10, offset = 0} = paginationDto || {};
      const recados = await this.recadoRepository.find({
       take: limit,
@@ -42,7 +43,7 @@ export class RecadosService {
      return recados;
   }
 
- async findOne(id: number): Promise<Recado> {
+ async findOne(id: number): Promise<ResponseRecadoDto> {
     const recado = await this.recadoRepository.findOne({ 
       where: { id: id },
        relations: ['de', 'para'],
@@ -66,7 +67,7 @@ export class RecadosService {
     return recado;
   }
 
-  async create(createRecadoDto: CreateRecadoDto, tokenPayload: TokenPayloadDto) {
+  async create(createRecadoDto: CreateRecadoDto, tokenPayload: TokenPayloadDto): Promise<ResponseRecadoDto> {
     const { paraId} = createRecadoDto;
 
     const de = await this.pessoasService.findOne(tokenPayload.sub);
@@ -97,7 +98,7 @@ export class RecadosService {
     }
   }
 
-  async update(id: number, updateRecadoDto: UpdateRecadoDto, tokenPayload: TokenPayloadDto) {
+  async update(id: number, updateRecadoDto: UpdateRecadoDto, tokenPayload: TokenPayloadDto): Promise<ResponseRecadoDto> {
    const recado = await this.findOne(id);
 
    recado.texto = updateRecadoDto.texto || recado.texto;
@@ -112,14 +113,14 @@ export class RecadosService {
    return recado;
   }
 
-  async delete(id: number, tokenPayload: TokenPayloadDto) {
+  async delete(id: number, tokenPayload: TokenPayloadDto): Promise<ResponseRecadoDto> {
    const recado = await this.findOne(id);
   
    if (recado.de.id !== tokenPayload.sub) {
     throw new ForbiddenException('Você não pode deletar este recado');
    }
-   return this.recadoRepository.remove(recado);
-
+   await this.recadoRepository.delete(recado.id);
+   return recado;
 }
 
 }

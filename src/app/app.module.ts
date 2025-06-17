@@ -4,49 +4,62 @@ import { AppService } from './app.service';
 import { RecadosModule } from 'src/recados/recados.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PessoasModule } from 'src/pessoas/pessoas.module';
-import { ConfigModule } from '@nestjs/config';
-import * as Joi from '@hapi/joi';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import * as Joi from 'joi';
 import { AuthModule } from 'src/auth/auth.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+
 @Module({
   imports: [
-
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
         limit: 10,
         blockDuration: 5000,
-      }
+      },
     ]),
 
     ConfigModule.forRoot({
+      isGlobal: true,
       validationSchema: Joi.object({
-        DATABASE_TYPE: Joi.string().required(),
-        DATABASE_HOST: Joi.string().required(),
-        DATABASE_PORT: Joi.number().required(),
-        DATABASE_USERNAME: Joi.string().required(),
-        DATABASE_PASSWORD: Joi.string().required(),
+        NODE_ENV: Joi.string()
+          .valid('development', 'production', 'test')
+          .default('development'),
+        DATABASE_URL: Joi.string().required(),
+        JWT_SECRET: Joi.string().required(),
+        JWT_TOKEN_AUDIENCE: Joi.string().required(),
+        JWT_TOKEN_ISSUER: Joi.string().required(),
+        JWT_TTL: Joi.number().default(3600),
       }),
     }),
-    TypeOrmModule.forRoot({
-      type: process.env.DATABASE_TYPE as 'postgres',
-      host: process.env.DATABASE_HOST,
-      port: +(process.env.DATABASE_PORT ?? 5432),
-      username: process.env.DATABASE_USERNAME,
-      database: process.env.DATABASE_DATABASE,
-      password: process.env.DATABASE_PASSWORD,
-      autoLoadEntities: Boolean(process.env.DATABASE_AUTOLOADENTITIES), // Carrega entidades sem precisar especifica-las
-      synchronize: Boolean(process.env.DATABASE_SYNCHRONIZE),
+
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        url: configService.get<string>('DATABASE_URL'),
+        autoLoadEntities: true,
+        synchronize: false,
+        ssl:
+          configService.get<string>('NODE_ENV') === 'production'
+            ? { rejectUnauthorized: false }
+            : false,
+      }),
     }),
+
     RecadosModule,
     PessoasModule,
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, {
-    provide: APP_GUARD,
-    useClass: ThrottlerGuard,
-  }],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule { }

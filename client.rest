@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:3000
+@baseUrl = https://recados-nest.vercel.app/
 
 @authToken = {{authenticate.response.body.accessToken}}
 
@@ -24,7 +24,7 @@ Content-Type: application/json
 
 {
     "texto": " Novo recadinho",
-    "paraId": 23
+    "paraId": 2
   }
 
 
@@ -71,7 +71,7 @@ Content-Type: application/json
 
 {
     "nome": "norberto",
-    "email": "norrto@gmail.com",
+    "email": "norberto@gmail.com",
     "password": "senha123"
   }
 
@@ -104,7 +104,7 @@ POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-    "email": "norberto@gmail.com",
+    "email": "norrto@gmail.com",
     "password": "senha123"
 }
 

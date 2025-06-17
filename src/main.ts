@@ -3,6 +3,7 @@ import { AppModule } from './app/app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { parseIntIdPipe } from './common/pipes/parseIntId.pipe';
 import helmet from 'helmet';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -26,6 +27,16 @@ async function bootstrap() {
       credentials: true,
     });
   }
+
+  const documentBuilder = new DocumentBuilder()
+    .setTitle('Recados API')
+    .setDescription('API para o projeto de recados')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+
+  const document = SwaggerModule.createDocument(app, documentBuilder);
+  SwaggerModule.setup('api', app, document);
 
   await app.listen(process.env.APP_PORT ?? 3000);
 }

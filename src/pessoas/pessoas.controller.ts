@@ -11,6 +11,7 @@ import { TokenPayloadParam } from 'src/auth/params/token-payload.param';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 
 @Controller('pessoas')
 export class PessoasController {
@@ -22,6 +23,8 @@ export class PessoasController {
   }
 
   @UseGuards(AuthTokenGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Listar todas as pessoas' })
   @Get()
   findAll(@Query() paginationDto: PaginationDto, @Req() request: Request) {
     console.log(request[REQUEST_TOKEN_PAYLOAD_KEY].sub);
@@ -29,6 +32,8 @@ export class PessoasController {
   }
 
   @UseGuards(AuthTokenGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Listar uma pessoa pelo ID' })
   @Get(':id')
   findOne(
     @Param('id') id: string
@@ -37,6 +42,8 @@ export class PessoasController {
   }
 
   @UseGuards(AuthTokenGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Atualizar uma pessoa pelo ID' })
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -47,6 +54,8 @@ export class PessoasController {
   }
 
   @UseGuards(AuthTokenGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Deletar uma pessoa pelo ID' })
   @Delete(':id')
   remove(
     @Param('id') id: string,
@@ -56,8 +65,10 @@ export class PessoasController {
   }
 
   @UseGuards(AuthTokenGuard)
+  @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('file'))
   @Post('upload-image')
+  @ApiOperation({ summary: 'Upload de imagem' })
   async uploadImage(
     @UploadedFile() file: Express.Multer.File,
     @TokenPayloadParam() tokenPayload: TokenPayloadDto,

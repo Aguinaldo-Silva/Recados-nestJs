@@ -1,6 +1,6 @@
 import { IsEmail } from "class-validator";
 import { RoutePolicies } from "src/auth/enums/route-policies.enum";
-import { Recado } from "src/recados/entities/recados.entity";
+import { IRecado } from "src/common/models/IRecado.interface";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
@@ -24,16 +24,15 @@ export class Pessoa {
     @UpdateDateColumn()
     updatedAt?: Date;
 
-    @OneToMany(() => Recado, (recado) => recado.de)
-    recadosEnviados: Recado[];
+    @OneToMany("Recado", "de")
+    recadosEnviados: IRecado[];
 
-    @OneToMany(() => Recado, (recado) => recado.para)
-    recadosRecebidos: Recado[];
+    @OneToMany("Recado", "para")
+    recadosRecebidos: IRecado[];
 
     @Column({ default: true })
     active: boolean;
 
     @Column({ type: 'simple-array', default: [] })
     routePolicies: RoutePolicies[];
-
 }
