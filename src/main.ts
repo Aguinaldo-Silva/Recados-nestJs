@@ -16,18 +16,16 @@ async function bootstrap() {
 
   );
 
-  app.enableCors({
-    origin: ['https://recados-nest.vercel.app', 'http://localhost:3000', 'http://localhost:4200'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
-  });
-
   if (process.env.NODE_ENV === 'production') {
-    app.use(helmet({
-      contentSecurityPolicy: false,
-      crossOriginEmbedderPolicy: false,
-    }));
+  app.use(helmet({
+
+  }));
+
+  app.enableCors({
+    origin: ['http://localhost:3000', 'http://localhost:4200'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      credentials: true,
+    });
   }
 
   const documentBuilder = new DocumentBuilder()
@@ -38,24 +36,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, documentBuilder);
-
-  SwaggerModule.setup('api', app, document, {
-    customSiteTitle: 'Recados API Documentation',
-    customfavIcon: 'https://recados-nest.vercel.app/favicon.ico',
-    customJs: [
-      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',
-      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js',
-    ],
-    customCssUrl: [
-      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
-    ],
-    swaggerOptions: {
-      persistAuthorization: true,
-      docExpansion: 'none',
-      filter: true,
-      showCommonExtensions: true,
-    },
-  });
+  SwaggerModule.setup('api', app, document);
 
   await app.listen(process.env.APP_PORT ?? 3000);
 }
