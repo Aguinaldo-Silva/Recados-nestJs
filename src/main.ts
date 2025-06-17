@@ -27,7 +27,9 @@ async function bootstrap() {
 
 
   if (process.env.NODE_ENV === 'production') {
-    app.use(helmet());
+    app.use(helmet({
+      contentSecurityPolicy: false,
+    }));
 
     app.enableCors({
       origin: [
@@ -53,6 +55,6 @@ async function bootstrap() {
   SwaggerModule.setup(docsPath, app, document);
 
 
-  await app.listen(process.env.PORT || 3000);
+  await app.listen(process.env.DATABASE_PORT || 3000);
 }
 bootstrap();
