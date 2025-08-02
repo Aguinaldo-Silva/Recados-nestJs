@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # Serviço da sua aplicação Node.js
+  app:
+    build: .
+    container_name: minha-app-node
+    ports:
+      - "3000:3000" # Mapeia a porta 3000 da sua máquina para a porta 3000 do contêiner
+    volumes:
+      - .:/usr/src/app # Espelha seu código local para dentro do contêiner (hot-reload)
+      - /usr/src/app/node_modules # Evita que a pasta node_modules local sobrescreva a do contêiner
+    environment:
+      - DB_HOST=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=nova_agenda
+      - DB_PORT=5432 # Dentro da rede Docker, a porta é a original (5432)
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - postgres
+      - redis
+
+  # Seu serviço PostgreSQL (sem alterações)
+  postgres:
+    image: bitnami/postgresql:latest
+    container_name: meu-banco-postgres
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=nova_agenda
+    volumes:
+      - postgres_data:/bitnami/postgresql
+
+  # Seu serviço Redis (sem alterações)
+  redis:
+    image: bitnami/redis:latest
+    container_name: meu-cache-redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/bitnami/redis/data
+
+volumes:
+  postgres_data:
+  redis_data:

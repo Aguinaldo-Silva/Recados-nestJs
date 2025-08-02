@@ -9,6 +9,7 @@ import * as Joi from 'joi';
 import { AuthModule } from 'src/auth/auth.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { ReceiveModule } from 'src/receive/receive.module';
 
 @Module({
   imports: [
@@ -41,7 +42,7 @@ import { APP_GUARD } from '@nestjs/core';
         type: 'postgres',
         url: configService.get<string>('DATABASE_URL'),
         autoLoadEntities: true,
-        synchronize: false,
+        synchronize: true,
         ssl:
           configService.get<string>('NODE_ENV') === 'production'
             ? { rejectUnauthorized: false }
@@ -52,6 +53,7 @@ import { APP_GUARD } from '@nestjs/core';
     RecadosModule,
     PessoasModule,
     AuthModule,
+    ReceiveModule,
   ],
   controllers: [AppController],
   providers: [

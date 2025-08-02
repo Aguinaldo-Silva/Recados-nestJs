@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { Pessoa } from 'src/pessoas/entities/pessoa.entity';
 import { Repository } from 'typeorm';
@@ -8,6 +8,7 @@ import { ConfigType } from '@nestjs/config';
 import jwtConfig from './config/jwt.config';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshDto } from './dto/refresh-token.dto';
+import { RegisterDto } from './dto/register.dto';
 
 
 @Injectable()
@@ -20,6 +21,20 @@ export class AuthService {
         private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
         private readonly jwtService: JwtService
     ) {
+    }
+
+    async register(registerDto: RegisterDto) {
+        const pessoa = this.pessoaRepository.create(registerDto);
+
+        if(pessoa.email) {
+            throw new BadRequestException('Email já cadastrado');
+        }
+
+        pessoa.passwordHash = await this.hashingService.hash(registerDto.password);
+        pessoa.active = true;
+        pessoa.createdAt = new Date();
+        pessoa.updatedAt = new Date();
+        return this.pessoaRepository.save(pessoa);
     }
 
     async login(loginDto: LoginDto) {

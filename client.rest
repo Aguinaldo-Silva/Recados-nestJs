@@ -1,4 +1,4 @@
-@baseUrl = https://recados-nest.vercel.app/
+@baseUrl = http://localhost:3000
 
 @authToken = {{authenticate.response.body.accessToken}}
 
@@ -94,6 +94,26 @@ DELETE {{baseUrl}}/pessoas/23
 Authorization: Bearer {{authToken}}
 
 
+###RECEIVE
+# @name getAllReceive
+GET {{baseUrl}}/receive
+?limit=10
+&offset=0
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name createReceive
+POST {{baseUrl}}/receive
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "amount": 50,
+    "createdAt": "2025-07-21",
+    "category": "presente",
+    "description": "teste"
+}
 
 
 
