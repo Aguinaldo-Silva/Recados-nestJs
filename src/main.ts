@@ -7,21 +7,32 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   app.useGlobalPipes(new ValidationPipe({
-    whitelist: true, //remove propriedades que não estão no DTO
-    forbidNonWhitelisted: true, //retorna um erro se houver propriedades que não estão no DTO
-    transform: true, //transforma o tipo da propriedade para o tipo do DTO
+    whitelist: true, 
+    forbidNonWhitelisted: true, 
+    transform: true, 
   }),
     new parseIntIdPipe()
   );
 
+  app.enableCors({
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:4200',
+      'http://localhost:3001',
+      'https://recados-nest.vercel.app',
+      'https://seu-frontend.vercel.app',
+    ],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    credentials: true,
+  });
+
   if (process.env.NODE_ENV === 'production') {
-    app.use(helmet({}));
-    app.enableCors({
-      origin: ['http://localhost:3000', 'http://localhost:4200'],
-      methods: ['GET', 'POST', 'PUT', 'DELETE'],
-      credentials: true,
-    });
+    app.use(helmet({
+      contentSecurityPolicy: false,
+    }));
   }
 
   const documentBuilder = new DocumentBuilder()
