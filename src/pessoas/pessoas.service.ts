@@ -19,13 +19,13 @@ export class PessoasService {
   ) {}
 
  async findAll(@Query() paginationDto?: PaginationDto) {
-    const {limit = 10, offset = 0} = paginationDto || {};
+    const {limit = 10, page = 0} = paginationDto || {};
     return await this.pessoaRepository.find({
       order: {
         nome: 'ASC',
       },
       take: limit,
-      skip: offset,
+      skip: page,
     });
   }
 
