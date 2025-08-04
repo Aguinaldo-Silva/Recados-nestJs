@@ -19,10 +19,10 @@ export class RecadosService {
  }
 
  async findAll(@Query() paginationDto?: PaginationDto): Promise<ResponseRecadoDto[]> {
-     const {limit = 10, offset = 0} = paginationDto || {};
+     const {limit = 10, page = 0} = paginationDto || {};
      const recados = await this.recadoRepository.find({
       take: limit,
-      skip: offset,
+      skip: page,
       relations: ['de', 'para'],
       order: {
         createdAt: 'DESC',
