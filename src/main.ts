@@ -18,20 +18,32 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [
-      'http://localhost:3000',
       'http://localhost:4200',
-      'http://localhost:3001',
       'https://recados-nest.vercel.app',
-      'https://seu-frontend.vercel.app',
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
-    credentials: true,
+    credentials: false, 
   });
 
   if (process.env.NODE_ENV === 'production') {
     app.use(helmet({
-      contentSecurityPolicy: false,
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: [`'self'`],
+          styleSrc: [`'self'`, `'unsafe-inline'`, 'https://cdnjs.cloudflare.com'],
+          scriptSrc: [`'self'`, `'unsafe-inline'`, 'https://cdnjs.cloudflare.com'],
+          imgSrc: [`'self'`, 'data:', 'https:'],
+          fontSrc: [`'self'`, 'https://cdnjs.cloudflare.com'],
+          connectSrc: [`'self'`],
+          frameSrc: [`'self'`],
+          objectSrc: [`'none'`],
+          upgradeInsecureRequests: [],
+        },
+      },
+      crossOriginEmbedderPolicy: false,
+      crossOriginOpenerPolicy: false,
+      crossOriginResourcePolicy: false,
     }));
   }
 
@@ -60,10 +72,21 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: {
       persistAuthorization: true,
+      docExpansion: 'list',
+      filter: true,
+      showRequestDuration: true,
     },
     customSiteTitle: 'Recados API Documentation',
+    customCss: '.swagger-ui .topbar { display: none }',
+    customJs: [
+      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.24.2/swagger-ui-bundle.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.24.2/swagger-ui-standalone-preset.min.js',
+    ],
+    customCssUrl: [
+      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.24.2/swagger-ui.min.css',
+    ],
   });
 
-  await app.listen(process.env.APP_PORT ?? 3000);
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
