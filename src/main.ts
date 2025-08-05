@@ -23,7 +23,7 @@ async function bootstrap() {
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
-    credentials: false, 
+    credentials: true,
   });
 
   if (process.env.NODE_ENV === 'production') {
